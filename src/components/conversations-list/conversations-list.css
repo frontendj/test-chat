@@ -1,0 +1,7 @@
+.conversations-list {
+    list-style: none;
+}
+
+.conversations-list__item + .conversations-list__item {
+    margin-top: 1em;
+}

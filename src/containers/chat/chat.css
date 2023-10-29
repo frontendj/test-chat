@@ -1,0 +1,28 @@
+.chat {
+    display: flex;
+    height: 100vh;
+}
+
+.chat__side {
+    width: 20%;
+    min-width: 200px;
+    flex: 0 0 auto;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.chat__main {
+    flex: 1 1 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat__messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+.chat__form {
+    flex: 0 0 auto;
+}
