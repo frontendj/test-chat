@@ -25,6 +25,7 @@ export interface MessagesListProps {
 // TODO:
 // Handling keyboard navigation between items (react-aria or anything else)
 // use useMemo for sorting and 'date'
+// momemnt.js is not the best, date-fns is lighter
 // Show 'Edit' only on hover?
 
 const MessagesList: FunctionComponent<MessagesListProps> = ({ conversation, onEditMessage }) => {

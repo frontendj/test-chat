@@ -10,8 +10,11 @@ import { getConvoIdFromURL } from 'utils/get-convo-id-from-url';
 import { useLocation } from 'react-router-dom';
 
 // TODO: break into smaller parts if chat grows
-// TODO: many messages and conversations require different approach with rendering only what's on the screen (react-window)
-// TODO: lazy loading
+// many messages and conversations require different approach with rendering only what's on the screen (react-window)
+// lazy loading
+// data fetching (swr?), error and loading states (skeleton?) handling
+// On bigger scale: real-time updates, notifications, search functionality
+// retry mechanism, empty states, timeouts, network connection monitoring, restoring user state after errors etc
 
 function ChatContainer() {
     const location = useLocation();
@@ -53,6 +56,8 @@ function ChatContainer() {
                 currentConversation.last_updated = currentDate;
             }
         }
+
+        // fetch request to server
 
         setMessage('');
         setCurrentMessage(undefined);
