@@ -1,13 +1,12 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect, useRef, RefObject } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useRef, RefObject } from 'react';
 
 import './chat.css';
-import conversationsData from './data.json';
 import MessagesList, { Message, Conversation } from 'components/messages-list/messages-list';
 import ReplySection from 'components/reply-section/reply-section';
 import ConversationsList from 'components/conversations-list/conversations-list';
-import { sortByDate } from 'utils/sort-by-date';
-import { getConvoIdFromURL } from 'utils/get-convo-id-from-url';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { fetchChats } from './fetchChats';
 
 // TODO: break into smaller parts if chat grows
 // many messages and conversations require different approach with rendering only what's on the screen (react-window)
@@ -15,19 +14,24 @@ import { useLocation } from 'react-router-dom';
 // data fetching (swr?), error and loading states (skeleton?) handling
 // On bigger scale: real-time updates, notifications, search functionality
 // retry mechanism, empty states, timeouts, network connection monitoring, restoring user state after errors etc
+// useState is the simpliest way to handle states in basic react app, however in the bigger one we may need to have
+// something more advanced, like redux
 
 function ChatContainer() {
-    const location = useLocation();
-    const sortedConversations = sortByDate(conversationsData, 'desc') as Conversation[];
 
-    // useState is the simpliest way to handle states in basic react app, however in the bigger one we may need to have
-    // something more advanced, like redux
-    const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
-    const [conversations, setConversations] = useState(sortedConversations);
-    const [currentConversation, setCurrentConversation] = useState<Conversation>();
+    const { conversationId } = useParams();
+    const conversationsData = useQuery({ queryKey: ['chats'], queryFn: fetchChats });
     const [currentMessage, setCurrentMessage] = useState<Message>();
     const [message, setMessage] = useState('');
-
+    const conversationById = conversationsData?.data?.find((conversation) => conversation.id === conversationId);
+    let currentConversation: any;
+    if (conversationById) {
+        currentConversation = conversationById;
+        document.title = `Conversation with ${conversationById.name}`;
+    } else if(conversationsData?.data) {
+        currentConversation = conversationsData?.data[0];
+        document.title = `Conversation with ${currentConversation.name}`;
+    }
     const inputRef: RefObject<HTMLInputElement> = useRef(null);
 
     function handleEditMessage(message: Message) {
@@ -67,32 +71,10 @@ function ChatContainer() {
         setMessage(event.target.value);
     };
 
-    // update conversation id on page url change
-    useEffect(() => {
-        const conversationId = getConvoIdFromURL();
-        if (conversationId) {
-            setCurrentConversationId(conversationId);
-        }
-    }, [location]);
-
-    // set default conversation
-    useEffect(() => {
-        const conversation = conversations.find((conversation) => conversation.id === currentConversationId);
-        if (conversation) {
-            setCurrentConversation(conversation);
-
-            document.title = `Conversation with ${conversation.name}`;
-        } else {
-            setCurrentConversation(sortedConversations[0]);
-
-            document.title = `Conversation with ${sortedConversations[0].name}`;
-        }
-    }, [currentConversationId]);
-
     return (
         <div className="chat">
             <div className="chat__side">
-                <ConversationsList conversations={conversations} currentConversationId={currentConversationId}/>
+                <ConversationsList conversations={conversationsData?.data} currentConversationId={conversationId}/>
             </div>
 
             <main id="main" className="chat__main">

@@ -11,7 +11,7 @@ export type Conversation = {
 }
 
 export interface ConversationsListProps {
-    conversations: Conversation[];
+    conversations?: Conversation[];
     currentConversationId?: Conversation['id'];
 }
 
@@ -21,12 +21,12 @@ const ConversationsList: FunctionComponent<ConversationsListProps> = ({ conversa
     return (
         <aside>
             <ul className="conversations-list" aria-label="Conversations">
-                {conversations.map((conversation) => {
+                {conversations?.map((conversation) => {
                     const date = moment(conversation.last_updated);
 
                     return (
                         <li className="conversations-list__item" key={conversation.id} style={currentConversationId === conversation.id ? { fontWeight: 'bold '} : undefined}>
-                            <Link to={`?cid=${conversation.id}`}>
+                            <Link to={`/conversations/${conversation.id}/`}>
                                 {`Conversation with ${conversation.name}, last updated ${date.format('MMMM Do YYYY, HH:mm:ss')}`}
                             </Link>
                         </li>
